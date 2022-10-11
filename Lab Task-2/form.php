@@ -1,0 +1,164 @@
+<!DOCTYPE HTML>  
+<html>
+<head>
+<style>
+.error {color: #FF0000;}
+</style>
+</head>
+<body>  
+<?php
+// define variables and set to empty values
+$nameErr = $emailErr = $dobErr= $degreeErr = $genderErr = $bgrpErr= "";
+$name = $email = $gender = "";
+$dob = $successmsg = "";
+$dobdd = $dobmm = $dobyy = ""; 
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if (empty($_POST["name"])) {
+    $nameErr = "Name is required";
+  } else {
+    $name =($_POST["name"]);
+    $wcount = str_word_count($name);
+if ($wcount <2 ) {
+      $nameErr = "Minimum 2 words required";
+    }
+    // check if name only contains letters and whitespace
+if (!preg_match("/^[a-zA-Z-' ]*$/",$name)) {
+      $nameErr = "Only letters and white space allowed";
+    }
+  }
+if (empty($_POST["email"])) {
+    $emailErr = "Email is required";
+  } else {
+    $email = test_input($_POST["email"]);
+    // check if e-mail address is well-formed
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      $emailErr = "Invalid email format";
+    }
+  }
+if (empty($_POST["dobdd"]) && empty($_POST["dobmm"]) && empty($_POST["dobyy"])) {
+    $dobErr = "Dob is required";
+      
+  } else {
+    $dobdd = test_input($_POST["dobdd"]);
+    $dobmm = test_input($_POST["dobmm"]);
+    $dobyy = test_input($_POST["dobyy"]);
+
+    $dob = $dobdd . "/" . $dobdd . "/" . $dobyy;
+if ($dobdd < 1 || $dobdd > 31) {
+      $dobErr = "DOB date incorrect! ";  
+    }
+if ($dobmm < 1 || $dobmm > 12) {
+      $dobErr .= "DOB month incorrect! ";  
+    } 
+if ($dobyy < 1953 || $dobyy > 1998) {
+      $dobErr .= "DOB year incorrect!";  
+    }
+    
+  }
+
+  if (empty($_POST["gender"])) {
+    $genderErr = "Gender is required";
+  } else {
+    $gender =($_POST["gender"]);
+  }
+}
+$ssc = $_POST["ssc"];
+$hsc = $_POST["hsc"];
+$bsc = $_POST["bsc"];
+$msc = $_POST["msc"];
+$degArr = array();
+
+if (isset($ssc)) {
+  array_push($degArr, $ssc);
+}
+if (isset($hsc)) {
+  array_push($degArr, $hsc);
+}
+if (isset($bsc)) {
+  array_push($degArr, $bsc);
+}
+if (isset($msc)) {
+  array_push($degArr, $msc);
+}
+
+if (sizeof($degArr) < 2) {
+  $degreeErr = "At least two degree required!";
+ 
+}
+if (empty($_POST['bgrp'])) {
+    $bgrpErr = "Must select a blood group";  
+  } else {
+    $bgrp = test_input($_POST["bgrp"]);
+  }
+
+function test_input($data) {
+  $data = trim($data);
+  $data = stripslashes($data);
+  $data = ($data);
+  return $data;
+}
+?>
+
+<h2>HTML form using PHP</h2>
+<p><span class="error">* required field</span></p>
+<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">  
+  Name: <input type="text" name="name">
+  <span class="error">* <?php echo $nameErr;?></span>
+  <br><br>
+  E-mail: <input type="text" name="email">
+  <span class="error">* <?php echo $emailErr;?></span>
+  <br><br>
+  Date Of Birth: <br>
+  dd <input type="text" size="5" name="dobdd" value="<?php echo $dobdd;?>"> mm <input type="text" size="5" name="dobmm" value="<?php echo $dobmm;?>"> 
+  yy <input type="text" name="dobyy" size="5" value="<?php echo $dobyy;?>">
+  <span class="error">* <?php echo $dobErr;?></span>
+  <br><br>
+  Gender:
+  <input type="radio" name="gender" value="female">Female
+  <input type="radio" name="gender" value="male">Male
+  <input type="radio" name="gender" value="other">Other
+  <span class="error">* <?php echo $genderErr;?></span>
+  <br><br>
+  Degree:
+  <input type="checkbox" id="ssc" name="ssc" value="SSC">
+  <label for="ssc"> SSC</label>
+  <input type="checkbox" id="hsc" name="hsc" value="HSC">
+  <label for="hsc"> HSC</label>
+  <input type="checkbox" id="bsc" name="bsc" value="BSc">
+  <label for="bsc"> BSc</label>
+  <input type="checkbox" id="vehicle3" name="msc" value="MSc">
+  <label for="msc"> MSc</label>
+  <span class="error"><?php echo $degreeErr;?></span>
+  <br><br>
+  <label for="cars">Blood Group:</label>
+  <select name="bgrp" id="bgrp">
+    <option value="" disabled selected ></option>
+    <option value="O+">O+</option>
+    <option value="A+">A+</option>
+    <option value="B+">B+</option>
+  </select>
+  <span class="error"><?php echo $bgrpErr;?></span>
+  <br><br>
+
+  <input type="submit" name="submit" value="Submit">  
+</form>
+
+<?php
+echo "<h2>Your Input:</h2>";
+echo $name;
+echo "<br>";
+echo $email;
+echo "<br>";
+echo $dob;
+echo "<br>";
+echo $gender;
+echo "<br>";
+echo $ssc, $hsc, $bsc, $msc;
+echo "<br>";
+echo $bgrp;
+?>
+
+</body>
+</html>
